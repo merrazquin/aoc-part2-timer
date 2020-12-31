@@ -7,8 +7,10 @@ See the difference in time between gaining 2 stars for the day on your [Advent o
 
 ## Installation
 
-* Firefox - TBD
-* Chrome - TBD
+* Firefox - https://addons.mozilla.org/en-US/firefox/addon/advent-of-code-part-2-timer/
+* Chrome - https://chrome.google.com/webstore/detail/advent-of-code-part-2-timer/fhmjpoppaplfhgnknpbaaklgdnnimfbn
+
+**Note:** you must generate a private leaderboard for this extension to work.
 
 
 ## Building locally

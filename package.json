@@ -1,6 +1,6 @@
 {
   "name": "aoc-part2-timer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Visualize the ranking over time of a Advent of Code private leaderboard",
   "directories": {
     "test": "test"
@@ -15,7 +15,8 @@
   },
   "keywords": [
     "adventofcode",
-    "ranking",
+    "stats",
+    "timer",
     "leaderboard",
     "visualization"
   ],
@@ -26,7 +27,6 @@
   },
   "homepage": "https://github.com/merrazquin/aoc-part2-timer#readme",
   "dependencies": {
-    "d3": "^5.16.0",
     "webextension-polyfill": "^0.5.0"
   },
   "devDependencies": {

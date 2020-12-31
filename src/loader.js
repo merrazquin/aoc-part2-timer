@@ -16,32 +16,57 @@ function fetchData(url, key) {
         });
 }
 
-export function loadData() {
+function getMemberId() {
     return new Promise((resolve, reject) => {
-        if (window.data) {
-            resolve(window.data);
-            return;
-        }
         browser.storage.local.get("memberId").then(memberId => {
-            console.log('memberId', memberId);
             if (memberId === null ||
                 !memberId.hasOwnProperty("memberId") ||
                 memberId.memberId == null) {
-                memberId = prompt("Please enter your member id");
-                browser.storage.local.set({memberId});
-            } else {
-                memberId = memberId.memberId;
-            }
 
-        const url =
-            document.location.protocol +
-            "//" +
-            document.location.host +
-            document.location.pathname.split("/").slice(0, 3).join("/") + 
-            "/private/view/" +
-            memberId +
-            ".json";
-            console.log('url', url)
+                const settingsUrl = document.location.protocol +
+                    "//" +
+                    document.location.host +
+                    document.location.pathname.split("/").slice(0, 2).join("/") +
+                    "/settings";
+                const utf8Decoder = new TextDecoder("utf-8");
+                fetch(settingsUrl)
+                    .then(response => response.body)
+                    .then(body => {
+                        const reader = body.getReader()
+                        reader.read().then(function processText({ done, value }) {
+                            if (done) {
+                                return;
+                            }
+                            const memberRegex = new RegExp(/\(anonymous user #(\d+)\)/, 'g');
+                            const chunk = utf8Decoder.decode(value);
+                            if (chunk.match(memberRegex)) {
+                                memberId = memberRegex.exec(chunk)[1]
+                                browser.storage.local.set({ memberId });
+                                resolve(memberId);
+                                return;
+                            }
+
+                            return reader.read().then(processText);
+                        });
+                    })
+            } else {
+                resolve(memberId.memberId);
+            }
+        })
+    })
+}
+
+export function loadData() {
+    return new Promise((resolve, reject) => {
+        getMemberId().then(memberId => {
+            const url =
+                document.location.protocol +
+                "//" +
+                document.location.host +
+                document.location.pathname.split("/").slice(0, 3).join("/") +
+                "/private/view/" +
+                memberId +
+                ".json";
             browser.storage.local.get(url).then(k => {
                 if (
                     k === null ||
@@ -49,13 +74,13 @@ export function loadData() {
                     !k[url].hasOwnProperty("data") ||
                     !k[[url]].hasOwnProperty("date")
                 ) {
-                    fetchData(url, url).then(data => resolve(data));
+                    fetchData(url, url).then(data => resolve({data, memberId}));
                 } else {
                     const ttl = new Date(k[url].date + 5 * 60 * 1000);
                     if (ttl < new Date()) {
-                        fetchData(url, url).then(data => resolve(data));
+                        fetchData(url, url).then(data => resolve({data, memberId}));
                     } else {
-                        resolve(k[url].data);
+                        resolve({data:k[url].data, memberId});
                     }
                 }
             });
