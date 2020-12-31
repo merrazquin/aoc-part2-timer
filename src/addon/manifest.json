@@ -1,11 +1,11 @@
 {
   "manifest_version": 2,
-  "name": "Advent of Code Ranking",
+  "name": "Advent of Code Part 2 Timer",
   "version": "__GENERATED__",
-  "description": "Visualize the ranking over time of a Advent of Code private leaderboard",
+  "description": "Add a column to the personal stats page which displays how long it took you to get from part 1 to part 2",
   "icons": {
-    "48": "icons/aoc-ranking-48.png",
-    "96": "icons/aoc-ranking-96.png"
+    "48": "icons/aoc-timer-48.png",
+    "96": "icons/aoc-timer-96.png"
   },
   "permissions": [
     "storage"
@@ -13,13 +13,10 @@
   "content_scripts": [
     {
       "matches": [
-        "https://adventofcode.com/*/leaderboard/private/view/*"
+        "https://adventofcode.com/*/leaderboard/self"
       ],
       "js": [
-        "ranking.js"
-      ],
-      "css": [
-        "ranking.css"
+        "stats.js"
       ]
     }
   ]

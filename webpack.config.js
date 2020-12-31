@@ -18,12 +18,11 @@ module.exports = {
                     manifestJson = JSON.stringify(manifest, null, 4);
                     return manifestJson;
                 }
-            },
-            { from: "src/ranking.css" }
+            }
         ])
     ],
-    entry: ["./src/ranking.js"],
+    entry: ["./src/stats.js"],
     output: {
-        filename: "ranking.js"
+        filename: "stats.js"
     }
 };

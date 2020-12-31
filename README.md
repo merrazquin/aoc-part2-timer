@@ -1,16 +1,14 @@
-# Advent of Code private leaderboard ranking extension
+# Advent of Code private stats Part 2 Timer
 
-Visualize the ranking over time of an [Advent of Code](https://www.adventofcode.com/) private leaderboard.
+See the difference in time between gaining 2 stars for the day on your [Advent of Code](https://www.adventofcode.com/) private stats page.
 
-See https://amochtar.github.io/aoc-ranking/ for an interactive example.
-
-![#Private Leaderboard Ranking](example/ranking.png "Private Leaderboard Ranking Example")
+![#Private Leaderboard Ranking](example/aoc-part2-timer-screenshot.png "Part 2 Timer Example")
 
 
 ## Installation
 
-* Firefox - https://addons.mozilla.org/en-US/firefox/addon/aoc-ranking/
-* Chrome - https://chrome.google.com/webstore/detail/advent-of-code-ranking/jbnlafikncgjjhdkmfhokcplgahebmjl
+* Firefox - TBD
+* Chrome - TBD
 
 
 ## Building locally
