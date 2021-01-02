@@ -2,7 +2,8 @@
 
 See the difference in time between gaining 2 stars for the day on your [Advent of Code](https://www.adventofcode.com/) private stats page.
 
-![#Private Leaderboard Ranking](example/aoc-part2-timer-screenshot.png "Part 2 Timer Example")
+![#Personal Stats](example/aoc-part2-timer-screenshot.png "Part 2 Timer Example")
+![#Personal Stats - with puzzle open tracker](example/advent-of-code-part2-timer-tracker.png "Part 2 Timer Example - with puzzle open tracker")
 
 
 ## Installation
