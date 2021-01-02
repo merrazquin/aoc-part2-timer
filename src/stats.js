@@ -3,5 +3,5 @@ import { calculateDeltas } from "./calculate";
 import { visualize } from "./visualize";
 
 loadData()
-    .then(({memberId, data, year, yearCache}) => calculateDeltas(memberId, data, year, yearCache))
-    .then((completion_day_level) => visualize(completion_day_level));
+    .then(({data, yearCache}) => calculateDeltas(data, yearCache))
+    .then(({completion_day_level, options}) => visualize(completion_day_level, options));
