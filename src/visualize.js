@@ -1,8 +1,11 @@
+import { formatTimestamp } from "./calculate";
+const lineRegex = new RegExp(/^\s+([^\s]+)(\s+\d+\s+\d+)\s+([^\s]+)(.*)$/);
+const origDisplay = document.getElementsByTagName('pre')[0].innerHTML.split("\n");
+let vizTimer = NaN
 
-export function visualize(data) {
-    const lineRegex = new RegExp(/^\s+([^\s]+)(\s+\d+\s+\d+)\s+([^\s]+)(.*)$/);
-    const origDisplay = document.getElementsByTagName('pre')[0].innerHTML.split("\n");
-    const includePuzzleOpenedColumn = Object.values(data).some(obj => obj.puzzleOpen != undefined)
+export function visualize(data, options) {
+    const includePuzzleOpenedColumn = Object.values(data).some(obj => obj.puzzleOpen != undefined);
+    const showTimer = options.showTimer && Object.values(data).some(obj => obj["2"] == undefined);
     let headerStart = origDisplay[0].indexOf("<");
     let updatedDisplay = origDisplay[0].substr(0, headerStart) + (includePuzzleOpenedColumn ? '<span class="leaderboard-daydesc-first">----Puzzle Opened----</span>   ' : '') +
                          origDisplay[0].substr(headerStart) + '   <span class="leaderboard-daydesc-first">---Part 1 to Part 2---</span>\n';
@@ -16,14 +19,22 @@ export function visualize(data) {
         }
         let [dayNum, restOfLine] = /(\d+)(.*)/.exec(line.trim()).slice(1);
         let delta = "";
+        let deltaObj;
         if (data[dayNum].delta) {
-            const deltaObj = data[dayNum].delta;
+            deltaObj = data[dayNum].delta
+        } else if (showTimer) {
+            const now = Math.floor((new Date()).getTime() / 1000);
+            deltaObj = formatTimestamp(now - data[dayNum]["1"].get_star_ts);
+        }
+        if (deltaObj) {
             delta = `   ${deltaObj.hours.toString().padStart(2, "0")}:${deltaObj.minutes.toString().padStart(2, "0")}:${deltaObj.seconds.toString().padStart(2, "0")}`;
             if (deltaObj.days) {
                 delta += ` +${deltaObj.days} days`;
             }
             if (!deltaObj.days && !deltaObj.hours && deltaObj.minutes < 5) {
                 delta = '<span class="leaderboard-daydesc-both">' + delta + '</span>';
+            } else if (showTimer && !data[dayNum].delta) {
+                delta = '<span class="leaderboard-daydesc-first">'  + delta + '</span>';
             }
         }
         let puzzleOpen = ''
@@ -49,6 +60,11 @@ export function visualize(data) {
     });
     
     document.getElementsByTagName('pre')[0].innerHTML = updatedDisplay;
-    
+    if (!isNaN(vizTimer)) {
+        clearTimeout(vizTimer);
+    }
+    if (showTimer) {
+        vizTimer = setTimeout(visualize, 1000, data, options);
+    }
     return data;
 }

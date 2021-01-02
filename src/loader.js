@@ -16,6 +16,14 @@ function fetchData(url, key) {
         });
 }
 
+function getOptions() {
+    return new Promise((resolve, reject) => {
+        browser.storage.local.get("options").then(options => {
+            resolve(options.options ? options.options : { showLiveTimer: false });
+        })
+    });
+}
+
 function getMemberId() {
     return new Promise((resolve, reject) => {
         browser.storage.local.get("memberId").then(memberId => {
@@ -52,8 +60,8 @@ function getMemberId() {
             } else {
                 resolve(memberId.memberId);
             }
-        })
-    })
+        });
+    });
 }
 
 function getPuzzleOpensForYear(year) {
@@ -67,33 +75,42 @@ function getPuzzleOpensForYear(year) {
 export function loadData() {
     return new Promise((resolve, reject) => {
         const year = document.location.pathname.split("/")[1];
-        getPuzzleOpensForYear(year).then(yearCache => {
-            getMemberId().then(memberId => {
-                const url =
-                    document.location.protocol +
-                    "//" +
-                    document.location.host +
-                    document.location.pathname.split("/").slice(0, 3).join("/") +
-                    "/private/view/" +
-                    memberId +
-                    ".json";
+        getOptions().then(options => {
+            getPuzzleOpensForYear(year).then(yearCache => {
+                getMemberId().then(memberId => {
+                    const url =
+                        document.location.protocol +
+                        "//" +
+                        document.location.host +
+                        document.location.pathname.split("/").slice(0, 3).join("/") +
+                        "/private/view/" +
+                        memberId +
+                        ".json";
 
-                browser.storage.local.get(url).then(k => {
-                    if (
-                        k === null ||
-                        !k.hasOwnProperty(url) ||
-                        !k[url].hasOwnProperty("data") ||
-                        !k[[url]].hasOwnProperty("date")
-                    ) {
-                        fetchData(url, url).then(data => resolve({ memberId, data, year, yearCache }));
-                    } else {
-                        const ttl = new Date(k[url].date + 5 * 60 * 1000);
-                        if (ttl < new Date()) {
-                            fetchData(url, url).then(data => resolve({ memberId, data, year, yearCache }));
+                    browser.storage.local.get(url).then(cache => {
+                        if (
+                            cache === null ||
+                            !cache.hasOwnProperty(url) ||
+                            !cache[url].hasOwnProperty("data") ||
+                            !cache[[url]].hasOwnProperty("date")
+                        ) {
+                            fetchData(url, url).then(data => {
+                                data.options = options;
+                                resolve({ data, yearCache });
+                            });
                         } else {
-                            resolve({ memberId, data: k[url].data, year, yearCache });
+                            const ttl = new Date(cache[url].date + 5 * 60 * 1000);
+                            if (ttl < new Date()) {
+                                fetchData(url, url).then(data => {
+                                    data.options = options;
+                                    resolve({ data, yearCache });
+                                });
+                            } else {
+                                cache[url].data.options = options;
+                                resolve({ data: cache[url].data, yearCache });
+                            }
                         }
-                    }
+                    });
                 });
             });
         });
