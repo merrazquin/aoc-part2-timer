@@ -56,33 +56,45 @@ function getMemberId() {
     })
 }
 
+function getPuzzleOpensForYear(year) {
+    return new Promise((resolve, reject) => {
+        browser.storage.local.get(year).then(yearCache => {
+            resolve(yearCache.hasOwnProperty(year) ? yearCache[year] : {})
+        });
+    });
+}
+
 export function loadData() {
     return new Promise((resolve, reject) => {
-        getMemberId().then(memberId => {
-            const url =
-                document.location.protocol +
-                "//" +
-                document.location.host +
-                document.location.pathname.split("/").slice(0, 3).join("/") +
-                "/private/view/" +
-                memberId +
-                ".json";
-            browser.storage.local.get(url).then(k => {
-                if (
-                    k === null ||
-                    !k.hasOwnProperty(url) ||
-                    !k[url].hasOwnProperty("data") ||
-                    !k[[url]].hasOwnProperty("date")
-                ) {
-                    fetchData(url, url).then(data => resolve({data, memberId}));
-                } else {
-                    const ttl = new Date(k[url].date + 5 * 60 * 1000);
-                    if (ttl < new Date()) {
-                        fetchData(url, url).then(data => resolve({data, memberId}));
+        const year = document.location.pathname.split("/")[1];
+        getPuzzleOpensForYear(year).then(yearCache => {
+            getMemberId().then(memberId => {
+                const url =
+                    document.location.protocol +
+                    "//" +
+                    document.location.host +
+                    document.location.pathname.split("/").slice(0, 3).join("/") +
+                    "/private/view/" +
+                    memberId +
+                    ".json";
+
+                browser.storage.local.get(url).then(k => {
+                    if (
+                        k === null ||
+                        !k.hasOwnProperty(url) ||
+                        !k[url].hasOwnProperty("data") ||
+                        !k[[url]].hasOwnProperty("date")
+                    ) {
+                        fetchData(url, url).then(data => resolve({ memberId, data, year, yearCache }));
                     } else {
-                        resolve({data:k[url].data, memberId});
+                        const ttl = new Date(k[url].date + 5 * 60 * 1000);
+                        if (ttl < new Date()) {
+                            fetchData(url, url).then(data => resolve({ memberId, data, year, yearCache }));
+                        } else {
+                            resolve({ memberId, data: k[url].data, year, yearCache });
+                        }
                     }
-                }
+                });
             });
         });
     });

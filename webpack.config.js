@@ -21,8 +21,11 @@ module.exports = {
             }
         ])
     ],
-    entry: ["./src/stats.js"],
+    entry: {
+        stats: "./src/stats.js",
+        tracker: "./src/tracker.js"
+    },
     output: {
-        filename: "stats.js"
+        filename: "[name].js"
     }
 };

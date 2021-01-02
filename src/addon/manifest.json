@@ -18,6 +18,14 @@
       "js": [
         "stats.js"
       ]
+    },
+    {
+      "matches": [
+        "https://adventofcode.com/*/day/*"
+      ],
+      "js": [
+        "tracker.js"
+      ]
     }
   ]
 }
